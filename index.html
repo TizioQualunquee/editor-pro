@@ -1,13 +1,119 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>temp-project</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimal Text Editor</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Top Menu Bar -->
+        <header class="menu-bar">
+            <div class="menu-item">
+                <button class="menu-btn" data-menu="file">File</button>
+                <div class="dropdown-content" id="menu-file">
+                    <button data-action="new">New</button>
+                    <button data-action="open">Open</button>
+                    <button data-action="save">Save</button>
+                    <button data-action="export">Export</button>
+                    <button data-action="print">Print</button>
+                </div>
+            </div>
+            <div class="menu-item">
+                <button class="menu-btn" data-menu="edit">Edit</button>
+                <div class="dropdown-content" id="menu-edit">
+                    <button data-action="undo">Undo</button>
+                    <button data-action="redo">Redo</button>
+                    <button data-action="cut">Cut</button>
+                    <button data-action="copy">Copy</button>
+                    <button data-action="paste">Paste</button>
+                    <button data-action="select-all">Select All</button>
+                    <button data-action="find-replace">Find & Replace</button>
+                </div>
+            </div>
+            <div class="menu-item">
+                <button class="menu-btn" data-menu="view">View</button>
+                <div class="dropdown-content" id="menu-view">
+                    <button data-action="zoom-in">Zoom In</button>
+                    <button data-action="zoom-out">Zoom Out</button>
+                    <button data-action="reset-zoom">Reset Zoom</button>
+                    <button data-action="fullscreen">Toggle Fullscreen</button>
+                </div>
+            </div>
+            <div class="menu-item">
+                <button class="menu-btn" data-menu="tools">Tools</button>
+                <div class="dropdown-content" id="menu-tools">
+                    <button data-action="word-count">Word Count</button>
+                    <button data-action="sort-asc">Sort Lines (Asc)</button>
+                    <button data-action="sort-desc">Sort Lines (Desc)</button>
+                    <button data-action="trim">Trim Spaces</button>
+                </div>
+            </div>
+            <div class="menu-item">
+                <button class="menu-btn" data-menu="text">Text</button>
+                <div class="dropdown-content" id="menu-text">
+                    <button data-action="uppercase">Uppercase</button>
+                    <button data-action="lowercase">Lowercase</button>
+                    <button data-action="capitalize">Capitalize</button>
+                </div>
+            </div>
+            <div class="menu-item">
+                <button class="menu-btn" data-menu="format">Format</button>
+                <div class="dropdown-content" id="menu-format">
+                    <button data-action="bold">Bold</button>
+                    <button data-action="italic">Italic</button>
+                    <button data-action="underline">Underline</button>
+                    <button data-action="strikethrough">Strikethrough</button>
+                </div>
+            </div>
+            <div class="menu-item">
+                <button class="menu-btn" data-menu="help">Help</button>
+                <div class="dropdown-content" id="menu-help">
+                    <button data-action="about">About</button>
+                    <button data-action="shortcuts">Shortcuts</button>
+                    <button data-action="docs">Documentation</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Editor Area -->
+        <main class="editor-area">
+            <textarea id="editor" placeholder="Start writing..." spellcheck="false"></textarea>
+        </main>
+
+        <!-- Search & Replace Panel (Hidden by default) -->
+        <div id="search-panel" class="search-panel hidden">
+            <div class="search-header">
+                <span>Find & Replace</span>
+                <button id="close-search">&times;</button>
+            </div>
+            <div class="search-inputs">
+                <input type="text" id="find-input" placeholder="Find...">
+                <input type="text" id="replace-input" placeholder="Replace with...">
+                <div class="search-options">
+                    <input type="checkbox" id="regex-toggle">
+                    <label for="regex-toggle">Regular Expression</label>
+                </div>
+                <div class="search-actions">
+                    <button id="replace-btn">Replace</button>
+                    <button id="replace-all-btn">Replace All</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Status Bar -->
+        <footer class="status-bar">
+            <div class="stats">
+                <span>Lines: <span id="lines-count">0</span></span>
+                <span>Words: <span id="words-count">0</span></span>
+                <span>Chars: <span id="chars-count">0</span></span>
+                <span>Chars (no space): <span id="chars-nospace-count">0</span></span>
+                <span>Paragraphs: <span id="paragraphs-count">0</span></span>
+            </div>
+            <div class="encoding">UTF-8</div>
+        </footer>
+    </div>
+    <script src="script.js"></script>
+</body>
 </html>

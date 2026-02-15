@@ -1,0 +1,240 @@
+:root {
+    --bg-color: #f5f5f4;
+    --bar-bg-color: #e5e5e4;
+    --text-color: #1c1917;
+    --border-color: #d4d4d4;
+    --hover-color: #d4d4d4;
+    --focus-color: #a8a29e;
+    --white: #ffffff;
+    --font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
+
+/* Menu Bar */
+.menu-bar {
+    display: flex;
+    background-color: var(--bar-bg-color);
+    border-bottom: 1px solid var(--border-color);
+    padding: 0 8px;
+    height: 32px;
+    align-items: center;
+    user-select: none;
+    z-index: 100;
+}
+
+.menu-item {
+    position: relative;
+}
+
+.menu-btn {
+    background: none;
+    border: none;
+    padding: 6px 12px;
+    font-size: 14px;
+    color: var(--text-color);
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.menu-btn:hover, .menu-btn.active {
+    background-color: var(--hover-color);
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: var(--white);
+    min-width: 180px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border: 1px solid var(--border-color);
+    z-index: 1;
+}
+
+.dropdown-content button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 8px 16px;
+    background: none;
+    border: none;
+    font-size: 13px;
+    color: var(--text-color);
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.dropdown-content button:hover {
+    background-color: var(--bg-color);
+}
+
+.menu-item:hover .dropdown-content {
+    /* To be controlled via JS for click behavior mostly, but hover can work too.
+       Let's stick to JS for toggling as requested "desktop software" feel */
+}
+
+.show {
+    display: block;
+}
+
+/* Editor Area */
+.editor-area {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+    padding: 32px;
+}
+
+#editor {
+    width: 100%;
+    max-width: 900px;
+    height: 100%;
+    background-color: transparent;
+    border: none;
+    resize: none;
+    outline: none;
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--text-color);
+    font-family: var(--font-family);
+}
+
+#editor::placeholder {
+    color: var(--focus-color);
+}
+
+/* Status Bar */
+.status-bar {
+    background-color: var(--bar-bg-color);
+    border-top: 1px solid var(--border-color);
+    padding: 4px 16px;
+    font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 28px;
+    user-select: none;
+}
+
+.stats span {
+    margin-right: 24px;
+}
+
+/* Search Panel */
+.search-panel {
+    position: absolute;
+    top: 40px;
+    right: 20px;
+    width: 320px;
+    background-color: var(--white);
+    border: 1px solid var(--border-color);
+    padding: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    z-index: 200;
+}
+
+.hidden {
+    display: none;
+}
+
+.search-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+#close-search {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: #78716c;
+}
+
+#close-search:hover {
+    color: var(--text-color);
+}
+
+.search-inputs input[type="text"] {
+    width: 100%;
+    padding: 6px 8px;
+    margin-bottom: 8px;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-color);
+    outline: none;
+    font-size: 14px;
+}
+
+.search-inputs input[type="text"]:focus {
+    border-color: var(--focus-color);
+}
+
+.search-options {
+    margin-bottom: 12px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+}
+
+.search-options input {
+    margin-right: 6px;
+}
+
+.search-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.search-actions button {
+    flex: 1;
+    padding: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background-color 0.2s;
+}
+
+#replace-btn {
+    background-color: var(--bar-bg-color);
+    color: var(--text-color);
+}
+
+#replace-btn:hover {
+    background-color: var(--hover-color);
+}
+
+#replace-all-btn {
+    background-color: var(--text-color);
+    color: var(--white);
+}
+
+#replace-all-btn:hover {
+    background-color: #292524;
+}
