@@ -3,117 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minimal Text Editor</title>
+    <title>Modern Text Editor</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Load marked.js for Markdown rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Load DOMPurify for sanitization -->
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+    <!-- Use Phosphor Icons for a clean, modern look -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
 <body>
     <div class="app-container">
         <!-- Top Menu Bar -->
         <header class="menu-bar">
-            <div class="menu-item">
-                <button class="menu-btn" data-menu="file">File</button>
-                <div class="dropdown-content" id="menu-file">
-                    <button data-action="new">New</button>
-                    <button data-action="open">Open</button>
-                    <button data-action="save">Save</button>
-                    <button data-action="export">Export</button>
-                    <button data-action="print">Print</button>
+            <div class="menu-left">
+                <div class="menu-item">
+                    <button class="menu-btn" data-menu="file">File</button>
+                    <div class="dropdown-content" id="menu-file">
+                        <button data-action="new"><i class="ph ph-file"></i> New</button>
+                        <button data-action="open"><i class="ph ph-folder-open"></i> Open</button>
+                        <button data-action="save"><i class="ph ph-floppy-disk"></i> Save (Markdown)</button>
+                        <button data-action="export-html"><i class="ph ph-export"></i> Export HTML</button>
+                        <hr>
+                        <button data-action="print"><i class="ph ph-printer"></i> Print</button>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <button class="menu-btn" data-menu="edit">Edit</button>
+                    <div class="dropdown-content" id="menu-edit">
+                        <button data-action="undo"><i class="ph ph-arrow-u-up-left"></i> Undo</button>
+                        <button data-action="redo"><i class="ph ph-arrow-u-up-right"></i> Redo</button>
+                        <hr>
+                        <button data-action="cut"><i class="ph ph-scissors"></i> Cut</button>
+                        <button data-action="copy"><i class="ph ph-copy"></i> Copy</button>
+                        <button data-action="paste"><i class="ph ph-clipboard-text"></i> Paste</button>
+                        <button data-action="select-all"><i class="ph ph-selection-all"></i> Select All</button>
+                        <hr>
+                        <button data-action="find-replace"><i class="ph ph-magnifying-glass"></i> Find & Replace</button>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <button class="menu-btn" data-menu="view">View</button>
+                    <div class="dropdown-content" id="menu-view">
+                        <button data-action="toggle-preview"><i class="ph ph-eye"></i> Toggle Preview</button>
+                        <button data-action="toggle-theme"><i class="ph ph-moon"></i> Toggle Dark Mode</button>
+                        <button data-action="fullscreen"><i class="ph ph-corners-out"></i> Fullscreen</button>
+                        <hr>
+                        <button data-action="zoom-in"><i class="ph ph-magnifying-glass-plus"></i> Zoom In</button>
+                        <button data-action="zoom-out"><i class="ph ph-magnifying-glass-minus"></i> Zoom Out</button>
+                        <button data-action="reset-zoom"><i class="ph ph-arrows-out-simple"></i> Reset Zoom</button>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <button class="menu-btn" data-menu="format">Format</button>
+                    <div class="dropdown-content" id="menu-format">
+                        <button data-action="bold"><i class="ph ph-text-b"></i> Bold</button>
+                        <button data-action="italic"><i class="ph ph-text-italic"></i> Italic</button>
+                        <button data-action="strikethrough"><i class="ph ph-text-strikethrough"></i> Strikethrough</button>
+                        <hr>
+                        <button data-action="h1"><i class="ph ph-text-h-one"></i> Heading 1</button>
+                        <button data-action="h2"><i class="ph ph-text-h-two"></i> Heading 2</button>
+                        <button data-action="h3"><i class="ph ph-text-h-three"></i> Heading 3</button>
+                        <hr>
+                        <button data-action="blockquote"><i class="ph ph-quotes"></i> Blockquote</button>
+                        <button data-action="code"><i class="ph ph-code"></i> Code Block</button>
+                        <button data-action="link"><i class="ph ph-link"></i> Link</button>
+                        <button data-action="image"><i class="ph ph-image"></i> Image</button>
+                        <button data-action="list-ul"><i class="ph ph-list-bullets"></i> Unordered List</button>
+                        <button data-action="list-ol"><i class="ph ph-list-numbers"></i> Ordered List</button>
+                        <button data-action="table"><i class="ph ph-table"></i> Table</button>
+                        <button data-action="hr"><i class="ph ph-minus"></i> Horizontal Rule</button>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <button class="menu-btn" data-menu="tools">Tools</button>
+                    <div class="dropdown-content" id="menu-tools">
+                        <button data-action="word-count"><i class="ph ph-chart-bar"></i> Word Count</button>
+                        <button data-action="sort-asc"><i class="ph ph-sort-ascending"></i> Sort Lines (Asc)</button>
+                        <button data-action="sort-desc"><i class="ph ph-sort-descending"></i> Sort Lines (Desc)</button>
+                        <button data-action="trim"><i class="ph ph-scissors"></i> Trim Spaces</button>
+                        <hr>
+                        <button data-action="uppercase"><i class="ph ph-text-aa"></i> Uppercase</button>
+                        <button data-action="lowercase"><i class="ph ph-text-aa"></i> Lowercase</button>
+                        <button data-action="capitalize"><i class="ph ph-text-aa"></i> Capitalize</button>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <button class="menu-btn" data-menu="help">Help</button>
+                    <div class="dropdown-content" id="menu-help">
+                        <button data-action="about"><i class="ph ph-info"></i> About</button>
+                        <button data-action="shortcuts"><i class="ph ph-keyboard"></i> Shortcuts</button>
+                    </div>
                 </div>
             </div>
-            <div class="menu-item">
-                <button class="menu-btn" data-menu="edit">Edit</button>
-                <div class="dropdown-content" id="menu-edit">
-                    <button data-action="undo">Undo</button>
-                    <button data-action="redo">Redo</button>
-                    <button data-action="cut">Cut</button>
-                    <button data-action="copy">Copy</button>
-                    <button data-action="paste">Paste</button>
-                    <button data-action="select-all">Select All</button>
-                    <button data-action="find-replace">Find & Replace</button>
-                </div>
-            </div>
-            <div class="menu-item">
-                <button class="menu-btn" data-menu="view">View</button>
-                <div class="dropdown-content" id="menu-view">
-                    <button data-action="zoom-in">Zoom In</button>
-                    <button data-action="zoom-out">Zoom Out</button>
-                    <button data-action="reset-zoom">Reset Zoom</button>
-                    <button data-action="fullscreen">Toggle Fullscreen</button>
-                </div>
-            </div>
-            <div class="menu-item">
-                <button class="menu-btn" data-menu="tools">Tools</button>
-                <div class="dropdown-content" id="menu-tools">
-                    <button data-action="word-count">Word Count</button>
-                    <button data-action="sort-asc">Sort Lines (Asc)</button>
-                    <button data-action="sort-desc">Sort Lines (Desc)</button>
-                    <button data-action="trim">Trim Spaces</button>
-                </div>
-            </div>
-            <div class="menu-item">
-                <button class="menu-btn" data-menu="text">Text</button>
-                <div class="dropdown-content" id="menu-text">
-                    <button data-action="uppercase">Uppercase</button>
-                    <button data-action="lowercase">Lowercase</button>
-                    <button data-action="capitalize">Capitalize</button>
-                </div>
-            </div>
-            <div class="menu-item">
-                <button class="menu-btn" data-menu="format">Format</button>
-                <div class="dropdown-content" id="menu-format">
-                    <button data-action="bold">Bold</button>
-                    <button data-action="italic">Italic</button>
-                    <button data-action="underline">Underline</button>
-                    <button data-action="strikethrough">Strikethrough</button>
-                </div>
-            </div>
-            <div class="menu-item">
-                <button class="menu-btn" data-menu="help">Help</button>
-                <div class="dropdown-content" id="menu-help">
-                    <button data-action="about">About</button>
-                    <button data-action="shortcuts">Shortcuts</button>
-                    <button data-action="docs">Documentation</button>
-                </div>
+            <div class="menu-right">
+                <span id="save-status" class="save-indicator">Saved</span>
             </div>
         </header>
 
-        <!-- Main Editor Area -->
-        <main class="editor-area">
-            <textarea id="editor" placeholder="Start writing..." spellcheck="false"></textarea>
+        <!-- Markdown Toolbar -->
+        <div class="toolbar">
+            <button class="tool-btn" data-action="bold" title="Bold (Ctrl+B)"><i class="ph ph-text-b"></i></button>
+            <button class="tool-btn" data-action="italic" title="Italic (Ctrl+I)"><i class="ph ph-text-italic"></i></button>
+            <button class="tool-btn" data-action="strikethrough" title="Strikethrough"><i class="ph ph-text-strikethrough"></i></button>
+            <div class="separator"></div>
+            <button class="tool-btn" data-action="h1" title="Heading 1"><i class="ph ph-text-h-one"></i></button>
+            <button class="tool-btn" data-action="h2" title="Heading 2"><i class="ph ph-text-h-two"></i></button>
+            <button class="tool-btn" data-action="h3" title="Heading 3"><i class="ph ph-text-h-three"></i></button>
+            <div class="separator"></div>
+            <button class="tool-btn" data-action="blockquote" title="Blockquote"><i class="ph ph-quotes"></i></button>
+            <button class="tool-btn" data-action="code" title="Code Block"><i class="ph ph-code"></i></button>
+            <button class="tool-btn" data-action="link" title="Link (Ctrl+K)"><i class="ph ph-link"></i></button>
+            <button class="tool-btn" data-action="image" title="Image"><i class="ph ph-image"></i></button>
+            <div class="separator"></div>
+            <button class="tool-btn" data-action="list-ul" title="Unordered List"><i class="ph ph-list-bullets"></i></button>
+            <button class="tool-btn" data-action="list-ol" title="Ordered List"><i class="ph ph-list-numbers"></i></button>
+            <button class="tool-btn" data-action="table" title="Table"><i class="ph ph-table"></i></button>
+            <button class="tool-btn" data-action="hr" title="Horizontal Rule"><i class="ph ph-minus"></i></button>
+        </div>
+
+        <!-- Main Content Area (Split View) -->
+        <main class="content-area">
+            <div class="editor-pane">
+                <textarea id="editor" placeholder="# Start writing..." spellcheck="false"></textarea>
+            </div>
+            <div class="preview-pane" id="preview">
+                <!-- Markdown Preview Content -->
+            </div>
         </main>
 
         <!-- Search & Replace Panel (Hidden by default) -->
         <div id="search-panel" class="search-panel hidden">
             <div class="search-header">
                 <span>Find & Replace</span>
-                <button id="close-search">&times;</button>
+                <button id="close-search"><i class="ph ph-x"></i></button>
             </div>
             <div class="search-inputs">
-                <input type="text" id="find-input" placeholder="Find...">
-                <input type="text" id="replace-input" placeholder="Replace with...">
+                <div class="input-group">
+                    <i class="ph ph-magnifying-glass input-icon"></i>
+                    <input type="text" id="find-input" placeholder="Find...">
+                </div>
+                <div class="input-group">
+                    <i class="ph ph-pencil-simple input-icon"></i>
+                    <input type="text" id="replace-input" placeholder="Replace with...">
+                </div>
                 <div class="search-options">
-                    <input type="checkbox" id="regex-toggle">
-                    <label for="regex-toggle">Regular Expression</label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="regex-toggle">
+                        <span class="custom-checkbox"></span>
+                        Regular Expression
+                    </label>
                 </div>
                 <div class="search-actions">
-                    <button id="replace-btn">Replace</button>
-                    <button id="replace-all-btn">Replace All</button>
+                    <button id="replace-btn" class="secondary-btn">Replace</button>
+                    <button id="replace-all-btn" class="primary-btn">Replace All</button>
                 </div>
             </div>
         </div>
 
         <!-- Bottom Status Bar -->
         <footer class="status-bar">
-            <div class="stats">
-                <span>Lines: <span id="lines-count">0</span></span>
-                <span>Words: <span id="words-count">0</span></span>
-                <span>Chars: <span id="chars-count">0</span></span>
-                <span>Chars (no space): <span id="chars-nospace-count">0</span></span>
-                <span>Paragraphs: <span id="paragraphs-count">0</span></span>
+            <div class="stats-left">
+                <span title="Lines"><i class="ph ph-rows"></i> <span id="lines-count">0</span></span>
+                <span title="Words"><i class="ph ph-text-t"></i> <span id="words-count">0</span></span>
+                <span title="Characters"><i class="ph ph-hash"></i> <span id="chars-count">0</span></span>
+                <span title="Characters (no spaces)"><i class="ph ph-hash-straight"></i> <span id="chars-no-space-count">0</span></span>
+                <span title="Paragraphs"><i class="ph ph-text-align-left"></i> <span id="paragraphs-count">0</span></span>
+                <span title="Estimated Reading Time"><i class="ph ph-clock"></i> <span id="reading-time">0 min</span></span>
             </div>
-            <div class="encoding">UTF-8</div>
+            <div class="stats-right">
+                <span id="editor-mode">Markdown</span>
+                <span class="encoding">UTF-8</span>
+            </div>
         </footer>
     </div>
+
+    <!-- Hidden File Input for Open -->
+    <input type="file" id="file-input" accept=".md,.txt" style="display: none;">
+
     <script src="script.js"></script>
 </body>
 </html>
