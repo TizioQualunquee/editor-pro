@@ -4,7 +4,6 @@
   <strong>A modern, fast, and feature-rich notepad & Markdown editor with multi-note management and a local-first experience.</strong>
 </p>
 
-
 <p align="center">
   Write, organize, preview, and export your notes directly in your browser.
   No account. No backend. Just a fast, private, local-first editor.
@@ -272,21 +271,6 @@ Because notes are stored in `localStorage`, clearing browser data can also remov
 **Use JSON export regularly if your notes are important.**
 
 Your browser is not a backup strategy. Humanity has learned this lesson repeatedly and then immediately forgotten it.
-
----
-
-## 🗺️ Roadmap
-
-Potential future improvements:
-
-* [ ] Note folders / collections
-* [ ] Custom theme creation
-* [ ] More Markdown extensions
-* [ ] Better accessibility support
-* [ ] Improved file-system integration
-* [ ] Optional encrypted local storage
-* [ ] PWA installation support
-* [ ] Additional export formats
 
 ---
 
