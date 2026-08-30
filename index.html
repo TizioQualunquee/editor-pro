@@ -1,15 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="slate-dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modern Text Editor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Editor Pro - Advanced Notepad & Markdown Editor</title>
+    
+    <!-- Local Fonts (Downloaded Offline) -->
+    <link rel="stylesheet" href="fonts/fonts.css">
+
+    <!-- Stylesheet -->
     <link rel="stylesheet" href="style.css">
-    <!-- Load marked.js for Markdown rendering -->
+    
+    <!-- Markdown Parser (marked.js) -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <!-- Load DOMPurify for sanitization -->
+    <!-- DOM Purifier for safety -->
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
-    <!-- Use Phosphor Icons for a clean, modern look -->
+    <!-- Highlight.js for code syntax in preview -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
 <body>
@@ -17,141 +26,325 @@
         <!-- Top Menu Bar -->
         <header class="menu-bar">
             <div class="menu-left">
-                <div class="menu-item">
-                    <button class="menu-btn" data-menu="file">File</button>
-                    <div class="dropdown-content" id="menu-file">
-                        <button data-action="new"><i class="ph ph-file"></i> New</button>
-                        <button data-action="open"><i class="ph ph-folder-open"></i> Open</button>
-                        <button data-action="save"><i class="ph ph-floppy-disk"></i> Save (Markdown)</button>
-                        <button data-action="export-html"><i class="ph ph-export"></i> Export HTML</button>
-                        <hr>
-                        <button data-action="print"><i class="ph ph-printer"></i> Print</button>
+                <button class="app-brand" id="btn-toggle-sidebar" title="Notes & Sidebar">
+                    <i class="ph ph-sidebar-simple brand-icon"></i>
+                    <span class="brand-name">Editor Pro</span>
+                </button>
+
+                <nav class="menu-nav" id="menu-nav">
+                    <!-- Menu Item: File -->
+                    <div class="menu-item">
+                        <button class="menu-btn" data-menu="file">File</button>
+                        <div class="dropdown-content" id="menu-file">
+                            <button data-action="new-note"><i class="ph ph-file-plus"></i> New Note <span class="shortcut">Ctrl+N</span></button>
+                            <button data-action="open"><i class="ph ph-folder-open"></i> Open File... <span class="shortcut">Ctrl+O</span></button>
+                            <hr>
+                            <button data-action="save-md"><i class="ph ph-floppy-disk"></i> Save as Markdown (.md) <span class="shortcut">Ctrl+S</span></button>
+                            <button data-action="save-txt"><i class="ph ph-file-text"></i> Save as Text (.txt)</button>
+                            <button data-action="export-html"><i class="ph ph-file-html"></i> Export HTML</button>
+                            <button data-action="export-pdf"><i class="ph ph-file-pdf"></i> Print / Export PDF <span class="shortcut">Ctrl+P</span></button>
+                            <hr>
+                            <button data-action="copy-rich"><i class="ph ph-clipboard"></i> Copy as Rich Text</button>
+                            <button data-action="duplicate-note"><i class="ph ph-copy-simple"></i> Duplicate Current Note</button>
+                            <button data-action="delete-note" class="danger-action"><i class="ph ph-trash"></i> Delete Current Note</button>
+                        </div>
                     </div>
-                </div>
-                <div class="menu-item">
-                    <button class="menu-btn" data-menu="edit">Edit</button>
-                    <div class="dropdown-content" id="menu-edit">
-                        <button data-action="undo"><i class="ph ph-arrow-u-up-left"></i> Undo</button>
-                        <button data-action="redo"><i class="ph ph-arrow-u-up-right"></i> Redo</button>
-                        <hr>
-                        <button data-action="cut"><i class="ph ph-scissors"></i> Cut</button>
-                        <button data-action="copy"><i class="ph ph-copy"></i> Copy</button>
-                        <button data-action="paste"><i class="ph ph-clipboard-text"></i> Paste</button>
-                        <button data-action="select-all"><i class="ph ph-selection-all"></i> Select All</button>
-                        <hr>
-                        <button data-action="find-replace"><i class="ph ph-magnifying-glass"></i> Find & Replace</button>
+
+                    <!-- Menu Item: Edit -->
+                    <div class="menu-item">
+                        <button class="menu-btn" data-menu="edit">Edit</button>
+                        <div class="dropdown-content" id="menu-edit">
+                            <button data-action="undo"><i class="ph ph-arrow-u-up-left"></i> Undo <span class="shortcut">Ctrl+Z</span></button>
+                            <button data-action="redo"><i class="ph ph-arrow-u-up-right"></i> Redo <span class="shortcut">Ctrl+Y</span></button>
+                            <hr>
+                            <button data-action="cut"><i class="ph ph-scissors"></i> Cut <span class="shortcut">Ctrl+X</span></button>
+                            <button data-action="copy"><i class="ph ph-copy"></i> Copy <span class="shortcut">Ctrl+C</span></button>
+                            <button data-action="paste"><i class="ph ph-clipboard-text"></i> Paste <span class="shortcut">Ctrl+V</span></button>
+                            <button data-action="select-all"><i class="ph ph-selection-all"></i> Select All <span class="shortcut">Ctrl+A</span></button>
+                            <hr>
+                            <button data-action="duplicate-line"><i class="ph ph-rows-plus-bottom"></i> Duplicate Line <span class="shortcut">Alt+Shift+↓</span></button>
+                            <button data-action="toggle-comment"><i class="ph ph-chat-centered-text"></i> Toggle Comment <span class="shortcut">Ctrl+/</span></button>
+                            <button data-action="insert-datetime"><i class="ph ph-calendar-plus"></i> Insert Date & Time <span class="shortcut">Ctrl+D</span></button>
+                            <button data-action="insert-table-dialog"><i class="ph ph-table"></i> Table Generator...</button>
+                            <hr>
+                            <button data-action="find-replace"><i class="ph ph-magnifying-glass"></i> Find and Replace <span class="shortcut">Ctrl+F</span></button>
+                        </div>
                     </div>
-                </div>
-                <div class="menu-item">
-                    <button class="menu-btn" data-menu="view">View</button>
-                    <div class="dropdown-content" id="menu-view">
-                        <button data-action="toggle-preview"><i class="ph ph-eye"></i> Toggle Preview</button>
-                        <button data-action="toggle-theme"><i class="ph ph-moon"></i> Toggle Dark Mode</button>
-                        <button data-action="fullscreen"><i class="ph ph-corners-out"></i> Fullscreen</button>
-                        <hr>
-                        <button data-action="zoom-in"><i class="ph ph-magnifying-glass-plus"></i> Zoom In</button>
-                        <button data-action="zoom-out"><i class="ph ph-magnifying-glass-minus"></i> Zoom Out</button>
-                        <button data-action="reset-zoom"><i class="ph ph-arrows-out-simple"></i> Reset Zoom</button>
+
+                    <!-- Menu Item: View -->
+                    <div class="menu-item">
+                        <button class="menu-btn" data-menu="view">View</button>
+                        <div class="dropdown-content" id="menu-view">
+                            <button data-action="toggle-sidebar"><i class="ph ph-sidebar"></i> Notes Sidebar <span class="shortcut">Ctrl+\</span></button>
+                            <button data-action="toggle-preview"><i class="ph ph-columns"></i> Split / Live Preview <span class="shortcut">Ctrl+Shift+P</span></button>
+                            <button data-action="focus-mode"><i class="ph ph-crosshair"></i> Focus Mode <span class="shortcut">F9</span></button>
+                            <button data-action="fullscreen"><i class="ph ph-corners-out"></i> Fullscreen <span class="shortcut">F11</span></button>
+                            <hr>
+                            <button data-action="toggle-line-numbers"><i class="ph ph-list-numbers"></i> Line Numbers</button>
+                            <button data-action="toggle-word-wrap"><i class="ph ph-text-align-left"></i> Word Wrap</button>
+                            <button data-action="toggle-spellcheck"><i class="ph ph-spell-check"></i> Spell Check</button>
+                            <hr>
+                            <button data-font="jetbrains"><i class="ph ph-code"></i> JetBrains Mono</button>
+                            <button data-font="fira"><i class="ph ph-brackets-curly"></i> Fira Code</button>
+                            <button data-font="inter"><i class="ph ph-text-aa"></i> Inter Sans</button>
+                            <button data-font="merriweather"><i class="ph ph-book"></i> Merriweather Serif</button>
+                            <hr>
+                            <button data-action="zoom-in"><i class="ph ph-magnifying-glass-plus"></i> Zoom In <span class="shortcut">Ctrl++</span></button>
+                            <button data-action="zoom-out"><i class="ph ph-magnifying-glass-minus"></i> Zoom Out <span class="shortcut">Ctrl+-</span></button>
+                            <button data-action="reset-zoom"><i class="ph ph-arrows-out-simple"></i> Reset Zoom <span class="shortcut">Ctrl+0</span></button>
+                        </div>
                     </div>
-                </div>
-                <div class="menu-item">
-                    <button class="menu-btn" data-menu="format">Format</button>
-                    <div class="dropdown-content" id="menu-format">
-                        <button data-action="bold"><i class="ph ph-text-b"></i> Bold</button>
-                        <button data-action="italic"><i class="ph ph-text-italic"></i> Italic</button>
-                        <button data-action="strikethrough"><i class="ph ph-text-strikethrough"></i> Strikethrough</button>
-                        <hr>
-                        <button data-action="h1"><i class="ph ph-text-h-one"></i> Heading 1</button>
-                        <button data-action="h2"><i class="ph ph-text-h-two"></i> Heading 2</button>
-                        <button data-action="h3"><i class="ph ph-text-h-three"></i> Heading 3</button>
-                        <hr>
-                        <button data-action="blockquote"><i class="ph ph-quotes"></i> Blockquote</button>
-                        <button data-action="code"><i class="ph ph-code"></i> Code Block</button>
-                        <button data-action="link"><i class="ph ph-link"></i> Link</button>
-                        <button data-action="image"><i class="ph ph-image"></i> Image</button>
-                        <button data-action="list-ul"><i class="ph ph-list-bullets"></i> Unordered List</button>
-                        <button data-action="list-ol"><i class="ph ph-list-numbers"></i> Ordered List</button>
-                        <button data-action="table"><i class="ph ph-table"></i> Table</button>
-                        <button data-action="hr"><i class="ph ph-minus"></i> Horizontal Rule</button>
+
+                    <!-- Menu Item: Format -->
+                    <div class="menu-item">
+                        <button class="menu-btn" data-menu="format">Format</button>
+                        <div class="dropdown-content" id="menu-format">
+                            <button data-action="bold"><i class="ph ph-text-b"></i> Bold <span class="shortcut">Ctrl+B</span></button>
+                            <button data-action="italic"><i class="ph ph-text-italic"></i> Italic <span class="shortcut">Ctrl+I</span></button>
+                            <button data-action="strikethrough"><i class="ph ph-text-strikethrough"></i> Strikethrough <span class="shortcut">Alt+S</span></button>
+                            <button data-action="highlight"><i class="ph ph-highlighter"></i> Highlight <span class="shortcut">Alt+H</span></button>
+                            <hr>
+                            <button data-action="h1"><i class="ph ph-text-h-one"></i> Heading 1 (H1) <span class="shortcut">Ctrl+1</span></button>
+                            <button data-action="h2"><i class="ph ph-text-h-two"></i> Heading 2 (H2) <span class="shortcut">Ctrl+2</span></button>
+                            <button data-action="h3"><i class="ph ph-text-h-three"></i> Heading 3 (H3) <span class="shortcut">Ctrl+3</span></button>
+                            <hr>
+                            <button data-action="blockquote"><i class="ph ph-quotes"></i> Blockquote</button>
+                            <button data-action="code"><i class="ph ph-code"></i> Code Block</button>
+                            <button data-action="link"><i class="ph ph-link"></i> Insert Link <span class="shortcut">Ctrl+K</span></button>
+                            <button data-action="image"><i class="ph ph-image"></i> Insert Image</button>
+                            <button data-action="list-task"><i class="ph ph-check-square"></i> Task Checklist</button>
+                            <button data-action="list-ul"><i class="ph ph-list-bullets"></i> Bulleted List</button>
+                            <button data-action="list-ol"><i class="ph ph-list-numbers"></i> Numbered List</button>
+                            <button data-action="hr"><i class="ph ph-minus"></i> Horizontal Rule</button>
+                        </div>
                     </div>
-                </div>
-                <div class="menu-item">
-                    <button class="menu-btn" data-menu="tools">Tools</button>
-                    <div class="dropdown-content" id="menu-tools">
-                        <button data-action="word-count"><i class="ph ph-chart-bar"></i> Word Count</button>
-                        <button data-action="sort-asc"><i class="ph ph-sort-ascending"></i> Sort Lines (Asc)</button>
-                        <button data-action="sort-desc"><i class="ph ph-sort-descending"></i> Sort Lines (Desc)</button>
-                        <button data-action="trim"><i class="ph ph-scissors"></i> Trim Spaces</button>
-                        <hr>
-                        <button data-action="uppercase"><i class="ph ph-text-aa"></i> Uppercase</button>
-                        <button data-action="lowercase"><i class="ph ph-text-aa"></i> Lowercase</button>
-                        <button data-action="capitalize"><i class="ph ph-text-aa"></i> Capitalize</button>
+
+                    <!-- Menu Item: Tools -->
+                    <div class="menu-item">
+                        <button class="menu-btn" data-menu="tools">Tools</button>
+                        <div class="dropdown-content" id="menu-tools">
+                            <button data-action="stats-dialog"><i class="ph ph-chart-donut"></i> Document Statistics...</button>
+                            <button data-action="table-generator"><i class="ph ph-table"></i> Table Generator...</button>
+                            <hr>
+                            <button data-action="sort-asc"><i class="ph ph-sort-ascending"></i> Sort Lines (A → Z)</button>
+                            <button data-action="sort-desc"><i class="ph ph-sort-descending"></i> Sort Lines (Z → A)</button>
+                            <button data-action="remove-duplicate-lines"><i class="ph ph-intersect"></i> Remove Duplicate Lines</button>
+                            <button data-action="remove-empty-lines"><i class="ph ph-funnel"></i> Remove Empty Lines</button>
+                            <button data-action="trim-lines"><i class="ph ph-arrows-in-line-horizontal"></i> Trim Line Whitespace</button>
+                            <hr>
+                            <button data-action="uppercase"><i class="ph ph-text-aa"></i> UPPERCASE</button>
+                            <button data-action="lowercase"><i class="ph ph-text-aa"></i> lowercase</button>
+                            <button data-action="capitalize"><i class="ph ph-text-aa"></i> Capitalize Words</button>
+                            <button data-action="slugify"><i class="ph ph-link-simple"></i> Convert to slug-url</button>
+                        </div>
                     </div>
-                </div>
-                <div class="menu-item">
-                    <button class="menu-btn" data-menu="help">Help</button>
-                    <div class="dropdown-content" id="menu-help">
-                        <button data-action="about"><i class="ph ph-info"></i> About</button>
-                        <button data-action="shortcuts"><i class="ph ph-keyboard"></i> Shortcuts</button>
+
+                    <!-- DIRECT DEDICATED THEMES DROPDOWN MENU -->
+                    <div class="menu-item">
+                        <button class="menu-btn" data-menu="themes">Themes</button>
+                        <div class="dropdown-content dropdown-scrollable" id="menu-themes">
+                            <button data-theme="clean-light"><i class="ph ph-sun"></i> Clean Light</button>
+                            <button data-theme="sepia-paper"><i class="ph ph-book-open"></i> Warm Paper (Sepia)</button>
+                            <button data-theme="nordic-frost"><i class="ph ph-snowflake"></i> Nordic Frost</button>
+                            <hr>
+                            <button data-theme="slate-dark"><i class="ph ph-moon"></i> Slate Midnight</button>
+                            <button data-theme="pure-oled"><i class="ph ph-circle"></i> OLED Pure Black</button>
+                            <button data-theme="dracula"><i class="ph ph-drop"></i> Dracula</button>
+                            <button data-theme="nord-dark"><i class="ph ph-compass"></i> Nord Deep</button>
+                            <button data-theme="cyberpunk"><i class="ph ph-lightning"></i> Cyberpunk Neon</button>
+                            <button data-theme="matcha-forest"><i class="ph ph-plant"></i> Matcha / Forest</button>
+                            <button data-theme="solarized-dark"><i class="ph ph-terminal"></i> Solarized Dark</button>
+                        </div>
                     </div>
-                </div>
+
+                    <!-- Menu Item: Help -->
+                    <div class="menu-item">
+                        <button class="menu-btn" data-menu="help">Help</button>
+                        <div class="dropdown-content" id="menu-help">
+                            <button data-action="shortcuts-dialog"><i class="ph ph-keyboard"></i> Keyboard Shortcuts <span class="shortcut">F1</span></button>
+                            <button data-action="markdown-cheatsheet"><i class="ph ph-file-code"></i> Markdown Guide</button>
+                            <hr>
+                            <button data-action="github-repo"><i class="ph ph-github-logo"></i> GitHub Repository</button>
+                            <button data-action="report-issue"><i class="ph ph-bug"></i> Report an Issue</button>
+                            <hr>
+                            <button data-action="about-dialog"><i class="ph ph-info"></i> About Editor Pro</button>
+                        </div>
+                    </div>
+                </nav>
             </div>
+
+            <!-- Menu Right: Quick Actions & Status -->
             <div class="menu-right">
-                <span id="save-status" class="save-indicator">Saved</span>
+                <div class="save-status-container">
+                    <span id="save-status" class="save-indicator">
+                        <i class="ph ph-check-circle"></i>
+                    </span>
+                </div>
+                <button class="quick-action-btn" id="btn-quick-theme" title="Change Theme">
+                    <i class="ph ph-palette"></i>
+                    <span id="current-theme-name" class="quick-btn-label">Slate Midnight</span>
+                </button>
+                <button class="quick-action-btn" id="btn-quick-preview" title="Markdown Live Preview">
+                    <i class="ph ph-columns"></i>
+                    <span class="quick-btn-label">Preview</span>
+                </button>
             </div>
         </header>
 
-        <!-- Markdown Toolbar -->
+        <!-- Markdown Quick Formatting Toolbar -->
         <div class="toolbar">
-            <button class="tool-btn" data-action="bold" title="Bold (Ctrl+B)"><i class="ph ph-text-b"></i></button>
-            <button class="tool-btn" data-action="italic" title="Italic (Ctrl+I)"><i class="ph ph-text-italic"></i></button>
-            <button class="tool-btn" data-action="strikethrough" title="Strikethrough"><i class="ph ph-text-strikethrough"></i></button>
+            <div class="toolbar-group">
+                <button class="tool-btn" data-action="bold" title="Bold (Ctrl+B)"><i class="ph ph-text-b"></i></button>
+                <button class="tool-btn" data-action="italic" title="Italic (Ctrl+I)"><i class="ph ph-text-italic"></i></button>
+                <button class="tool-btn" data-action="strikethrough" title="Strikethrough (Alt+S)"><i class="ph ph-text-strikethrough"></i></button>
+                <button class="tool-btn" data-action="highlight" title="Highlight (Alt+H)"><i class="ph ph-highlighter"></i></button>
+            </div>
             <div class="separator"></div>
-            <button class="tool-btn" data-action="h1" title="Heading 1"><i class="ph ph-text-h-one"></i></button>
-            <button class="tool-btn" data-action="h2" title="Heading 2"><i class="ph ph-text-h-two"></i></button>
-            <button class="tool-btn" data-action="h3" title="Heading 3"><i class="ph ph-text-h-three"></i></button>
+            <div class="toolbar-group">
+                <button class="tool-btn" data-action="h1" title="Heading 1"><i class="ph ph-text-h-one"></i></button>
+                <button class="tool-btn" data-action="h2" title="Heading 2"><i class="ph ph-text-h-two"></i></button>
+                <button class="tool-btn" data-action="h3" title="Heading 3"><i class="ph ph-text-h-three"></i></button>
+            </div>
             <div class="separator"></div>
-            <button class="tool-btn" data-action="blockquote" title="Blockquote"><i class="ph ph-quotes"></i></button>
-            <button class="tool-btn" data-action="code" title="Code Block"><i class="ph ph-code"></i></button>
-            <button class="tool-btn" data-action="link" title="Link (Ctrl+K)"><i class="ph ph-link"></i></button>
-            <button class="tool-btn" data-action="image" title="Image"><i class="ph ph-image"></i></button>
+            <div class="toolbar-group">
+                <button class="tool-btn" data-action="list-task" title="Task Checklist"><i class="ph ph-check-square"></i></button>
+                <button class="tool-btn" data-action="list-ul" title="Bulleted List"><i class="ph ph-list-bullets"></i></button>
+                <button class="tool-btn" data-action="list-ol" title="Numbered List"><i class="ph ph-list-numbers"></i></button>
+            </div>
             <div class="separator"></div>
-            <button class="tool-btn" data-action="list-ul" title="Unordered List"><i class="ph ph-list-bullets"></i></button>
-            <button class="tool-btn" data-action="list-ol" title="Ordered List"><i class="ph ph-list-numbers"></i></button>
-            <button class="tool-btn" data-action="table" title="Table"><i class="ph ph-table"></i></button>
-            <button class="tool-btn" data-action="hr" title="Horizontal Rule"><i class="ph ph-minus"></i></button>
+            <div class="toolbar-group">
+                <button class="tool-btn" data-action="blockquote" title="Blockquote"><i class="ph ph-quotes"></i></button>
+                <button class="tool-btn" data-action="code" title="Code Block"><i class="ph ph-code"></i></button>
+                <button class="tool-btn" data-action="link" title="Link (Ctrl+K)"><i class="ph ph-link"></i></button>
+                <button class="tool-btn" data-action="image" title="Image"><i class="ph ph-image"></i></button>
+                <button class="tool-btn" data-action="table-generator" title="Table Generator"><i class="ph ph-table"></i></button>
+                <button class="tool-btn" data-action="insert-datetime" title="Date & Time (Ctrl+D)"><i class="ph ph-calendar-plus"></i></button>
+            </div>
+            <div class="separator"></div>
+            <div class="toolbar-group">
+                <button class="tool-btn" data-action="find-replace" title="Find and Replace (Ctrl+F)"><i class="ph ph-magnifying-glass"></i></button>
+                <button class="tool-btn" data-action="focus-mode" title="Focus Mode (F9)"><i class="ph ph-crosshair"></i></button>
+                <button class="tool-btn" data-action="fullscreen" title="Fullscreen (F11)"><i class="ph ph-corners-out"></i></button>
+            </div>
         </div>
 
-        <!-- Main Content Area (Split View) -->
-        <main class="content-area">
-            <div class="editor-pane">
-                <textarea id="editor" placeholder="# Start writing..." spellcheck="false"></textarea>
-            </div>
-            <div class="preview-pane" id="preview">
-                <!-- Markdown Preview Content -->
-            </div>
-        </main>
+        <!-- App Body Layout (Sidebar + Main Workspace) -->
+        <div class="app-workspace">
+            <!-- Sidebar Mobile Backdrop -->
+            <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
 
-        <!-- Search & Replace Panel (Hidden by default) -->
+            <!-- Notes Sidebar -->
+            <aside class="notes-sidebar" id="notes-sidebar">
+                <div class="sidebar-header">
+                    <div class="sidebar-title-row">
+                        <span class="sidebar-title"><i class="ph ph-notebook"></i> My Notes</span>
+                        <div class="sidebar-header-actions">
+                            <button id="btn-sidebar-new-note" class="sidebar-icon-btn" title="New Note (Ctrl+N)">
+                                <i class="ph ph-plus"></i>
+                            </button>
+                            <button id="btn-sidebar-close" class="sidebar-close-mobile" title="Close Sidebar">
+                                <i class="ph ph-x"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="sidebar-search-box">
+                        <i class="ph ph-magnifying-glass"></i>
+                        <input type="text" id="notes-search-input" placeholder="Search notes...">
+                        <button id="btn-clear-search" class="clear-search-btn" title="Clear search"><i class="ph ph-x"></i></button>
+                    </div>
+                </div>
+
+                <div class="notes-list-container" id="notes-list">
+                    <!-- Note items dynamically rendered by JS -->
+                </div>
+
+                <div class="sidebar-footer">
+                    <span id="notes-count-label">0 notes</span>
+                    <button id="btn-export-all-notes" class="sidebar-text-btn" title="JSON Backup">
+                        <i class="ph ph-download-simple"></i> JSON Backup
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="main-content">
+                <!-- Note Tabs Strip -->
+                <div class="tabs-strip-container">
+                    <div class="tabs-list" id="tabs-list">
+                        <!-- Open tabs rendered dynamically by JS -->
+                    </div>
+                    <button id="btn-tab-new" class="tab-add-btn" title="New Tab">
+                        <i class="ph ph-plus"></i>
+                    </button>
+
+                    <!-- Mobile Mode View Switcher (Editor vs Preview) -->
+                    <div class="mobile-view-toggle" id="mobile-view-toggle">
+                        <button class="mobile-toggle-btn active" id="btn-mobile-show-editor"><i class="ph ph-pen"></i> Editor</button>
+                        <button class="mobile-toggle-btn" id="btn-mobile-show-preview"><i class="ph ph-eye"></i> Preview</button>
+                    </div>
+                </div>
+
+                <!-- Editor & Preview Split Workspace -->
+                <div class="editor-workspace" id="editor-workspace">
+                    <!-- Editor Pane with Gutter -->
+                    <div class="editor-pane" id="editor-pane">
+                        <div class="gutter" id="line-numbers-gutter"></div>
+                        <div class="editor-textarea-wrapper">
+                            <textarea id="editor" placeholder="# Start writing your note or Markdown document..." spellcheck="false" autocomplete="off" autocapitalize="off"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Split Resizer Bar -->
+                    <div class="pane-resizer" id="pane-resizer"></div>
+
+                    <!-- Markdown Live Preview Pane -->
+                    <div class="preview-pane" id="preview-pane">
+                        <div class="preview-header">
+                            <span class="preview-badge"><i class="ph ph-eye"></i> LIVE PREVIEW</span>
+                            <div class="preview-actions">
+                                <button id="btn-copy-preview-html" class="preview-action-btn" title="Copy Rendered HTML">
+                                    <i class="ph ph-code"></i> Copy HTML
+                                </button>
+                            </div>
+                        </div>
+                        <div class="preview-content" id="preview-content">
+                            <!-- Rendered Markdown injected here -->
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Search & Replace Panel (Floating / Collapsible) -->
         <div id="search-panel" class="search-panel hidden">
             <div class="search-header">
-                <span>Find & Replace</span>
-                <button id="close-search"><i class="ph ph-x"></i></button>
+                <span class="search-panel-title"><i class="ph ph-magnifying-glass"></i> Find and Replace</span>
+                <span id="search-match-count" class="search-matches">0 matches</span>
+                <button id="close-search" class="close-panel-btn" title="Close"><i class="ph ph-x"></i></button>
             </div>
             <div class="search-inputs">
                 <div class="input-group">
                     <i class="ph ph-magnifying-glass input-icon"></i>
-                    <input type="text" id="find-input" placeholder="Find...">
+                    <input type="text" id="find-input" placeholder="Search text...">
+                    <div class="search-nav-btns">
+                        <button id="find-prev-btn" class="nav-btn" title="Previous match"><i class="ph ph-caret-up"></i></button>
+                        <button id="find-next-btn" class="nav-btn" title="Next match"><i class="ph ph-caret-down"></i></button>
+                    </div>
                 </div>
                 <div class="input-group">
                     <i class="ph ph-pencil-simple input-icon"></i>
                     <input type="text" id="replace-input" placeholder="Replace with...">
                 </div>
                 <div class="search-options">
-                    <label class="checkbox-label">
+                    <label class="checkbox-label" title="Match Case">
+                        <input type="checkbox" id="match-case-toggle">
+                        <span class="custom-checkbox"></span>
+                        Aa Match Case
+                    </label>
+                    <label class="checkbox-label" title="Use Regular Expressions">
                         <input type="checkbox" id="regex-toggle">
                         <span class="custom-checkbox"></span>
-                        Regular Expression
+                        .* Regex
                     </label>
                 </div>
                 <div class="search-actions">
@@ -161,25 +354,201 @@
             </div>
         </div>
 
+        <!-- Table Generator Modal -->
+        <div id="table-modal" class="modal-overlay hidden">
+            <div class="modal-card">
+                <div class="modal-header">
+                    <div class="modal-title"><i class="ph ph-table"></i> Markdown Table Generator</div>
+                    <button class="modal-close" data-close-modal="table-modal"><i class="ph ph-x"></i></button>
+                </div>
+                <div class="modal-body">
+                    <div class="modal-row">
+                        <div class="modal-field">
+                            <label for="table-rows">Rows:</label>
+                            <input type="number" id="table-rows" min="1" max="50" value="3">
+                        </div>
+                        <div class="modal-field">
+                            <label for="table-cols">Columns:</label>
+                            <input type="number" id="table-cols" min="1" max="20" value="3">
+                        </div>
+                    </div>
+                    <div class="modal-field">
+                        <label>Alignment:</label>
+                        <select id="table-align" class="modal-select">
+                            <option value="left">Left (| :--- |)</option>
+                            <option value="center">Center (| :---: |)</option>
+                            <option value="right">Right (| ---: |)</option>
+                        </select>
+                    </div>
+                    <div class="table-preview-box">
+                        <label>Structure Preview:</label>
+                        <pre id="table-sample-code"></pre>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="secondary-btn" data-close-modal="table-modal">Cancel</button>
+                    <button id="btn-insert-generated-table" class="primary-btn">Insert Table</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Text Statistics Modal -->
+        <div id="stats-modal" class="modal-overlay hidden">
+            <div class="modal-card">
+                <div class="modal-header">
+                    <div class="modal-title"><i class="ph ph-chart-donut"></i> Document Statistics</div>
+                    <button class="modal-close" data-close-modal="stats-modal"><i class="ph ph-x"></i></button>
+                </div>
+                <div class="modal-body">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-num" id="stat-modal-words">0</div>
+                            <div class="stat-label">Words</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-num" id="stat-modal-chars">0</div>
+                            <div class="stat-label">Characters (with spaces)</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-num" id="stat-modal-chars-nospace">0</div>
+                            <div class="stat-label">Characters (no spaces)</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-num" id="stat-modal-lines">0</div>
+                            <div class="stat-label">Total Lines</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-num" id="stat-modal-paragraphs">0</div>
+                            <div class="stat-label">Paragraphs</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-num" id="stat-modal-read-time">0 min</div>
+                            <div class="stat-label">Reading Time</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="primary-btn" data-close-modal="stats-modal">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Keyboard Shortcuts Modal -->
+        <div id="shortcuts-modal" class="modal-overlay hidden">
+            <div class="modal-card modal-lg">
+                <div class="modal-header">
+                    <div class="modal-title"><i class="ph ph-keyboard"></i> Keyboard Shortcuts</div>
+                    <button class="modal-close" data-close-modal="shortcuts-modal"><i class="ph ph-x"></i></button>
+                </div>
+                <div class="modal-body shortcuts-list-scroll">
+                    <div class="shortcuts-grid">
+                        <div class="shortcut-category">
+                            <h4>File & Notes Management</h4>
+                            <div class="shortcut-row"><span class="shortcut-desc">New Note</span><kbd>Ctrl+N</kbd></div>
+                            <div class="shortcut-row"><span class="shortcut-desc">Save as Markdown</span><kbd>Ctrl+S</kbd></div>
+                            <div class="shortcut-row"><span class="shortcut-desc">Open File</span><kbd>Ctrl+O</kbd></div>
+                            <div class="shortcut-row"><span class="shortcut-desc">Print / PDF</span><kbd>Ctrl+P</kbd></div>
+                        </div>
+                        <div class="shortcut-category">
+                            <h4>Markdown Formatting</h4>
+                            <div class="shortcut-row"><span class="shortcut-desc">Bold</span><kbd>Ctrl+B</kbd></div>
+                            <div class="shortcut-row"><span class="shortcut-desc">Italic</span><kbd>Ctrl+I</kbd></div>
+                            <div class="shortcut-row"><span class="shortcut-desc">Insert Link</span><kbd>Ctrl+K</kbd></div>
+                            <div class="shortcut-row"><span class="shortcut-desc">Date & Time</span><kbd>Ctrl+D</kbd></div>
+                            <div class="shortcut-row"><span class="shortcut-desc">Headings (H1-H3)</span><kbd>Ctrl+1..3</kbd></div>
+                        </div>
+                        <div class="shortcut-category">
+                            <h4>Advanced Editing</h4>
+                            <div class="shortcut-row"><span class="shortcut-desc">Find & Replace</span><kbd>Ctrl+F</kbd></div>
+                            <div class="shortcut-row"><span class="shortcut-desc">Toggle Comment</span><kbd>Ctrl+/</kbd></div>
+                            <div class="shortcut-row"><span class="shortcut-desc">Duplicate Line</span><kbd>Alt+Shift+↓</kbd></div>
+                            <div class="shortcut-row"><span class="shortcut-desc">Indent / Dedent</span><kbd>Tab</kbd> / <kbd>Shift+Tab</kbd></div>
+                        </div>
+                        <div class="shortcut-category">
+                            <h4>View & Layout</h4>
+                            <div class="shortcut-row"><span class="shortcut-desc">Toggle Preview</span><kbd>Ctrl+Shift+P</kbd></div>
+                            <div class="shortcut-row"><span class="shortcut-desc">Toggle Sidebar</span><kbd>Ctrl+\</kbd></div>
+                            <div class="shortcut-row"><span class="shortcut-desc">Focus Mode</span><kbd>F9</kbd></div>
+                            <div class="shortcut-row"><span class="shortcut-desc">Fullscreen</span><kbd>F11</kbd></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="primary-btn" data-close-modal="shortcuts-modal">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- About Modal -->
+        <div id="about-modal" class="modal-overlay hidden">
+            <div class="modal-card">
+                <div class="modal-header">
+                    <div class="modal-title"><i class="ph ph-sparkle"></i> About Editor Pro</div>
+                    <button class="modal-close" data-close-modal="about-modal"><i class="ph ph-x"></i></button>
+                </div>
+                <div class="modal-body about-content">
+                    <div class="about-hero">
+                        <i class="ph ph-note-pencil about-logo"></i>
+                        <h3>Editor Pro v2.0</h3>
+                        <p class="about-tagline">The modern, offline, and responsive notepad for all devices.</p>
+                    </div>
+                    <div class="about-features-list">
+                        <div>✨ <strong>100% Local & Offline:</strong> Fonts and data stored locally on your device.</div>
+                        <div>📱 <strong>Fully Mobile-Ready:</strong> Seamless experience on smartphones and tablets.</div>
+                        <div>🎨 <strong>10 Curated Themes:</strong> Light and dark palettes selectable from the dedicated menu.</div>
+                        <div>📑 <strong>Multi-Notes & Tabs:</strong> Fast, organized, and persistent document management.</div>
+                    </div>
+                    <div class="about-credits">
+                        <div class="about-credits-title">Authors & Contributors</div>
+                        <div class="credits-cards">
+                            <a href="https://github.com/Semplicementeio" target="_blank" rel="noopener noreferrer" class="credit-card">
+                                <div class="credit-card-avatar"><i class="ph ph-rocket-launch"></i></div>
+                                <div class="credit-card-info">
+                                    <div class="credit-name">Semplicementeio <i class="ph ph-arrow-square-out"></i></div>
+                                    <div class="credit-role">Major Overhaul & v2.0 Architecture</div>
+                                </div>
+                            </a>
+                            <a href="https://github.com/TizioQualunquee" target="_blank" rel="noopener noreferrer" class="credit-card">
+                                <div class="credit-card-avatar"><i class="ph ph-lightbulb"></i></div>
+                                <div class="credit-card-info">
+                                    <div class="credit-name">TizioQualunquee <i class="ph ph-arrow-square-out"></i></div>
+                                    <div class="credit-role">Original Creator & Base Concept</div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a href="https://github.com/TizioQualunquee/editor-pro" target="_blank" rel="noopener noreferrer" class="secondary-btn" style="text-decoration:none;">
+                        <i class="ph ph-star"></i> Star on GitHub
+                    </a>
+                    <button class="primary-btn" data-close-modal="about-modal">Awesome!</button>
+                </div>
+            </div>
+        </div>
+
         <!-- Bottom Status Bar -->
         <footer class="status-bar">
             <div class="stats-left">
-                <span title="Lines"><i class="ph ph-rows"></i> <span id="lines-count">0</span></span>
-                <span title="Words"><i class="ph ph-text-t"></i> <span id="words-count">0</span></span>
-                <span title="Characters"><i class="ph ph-hash"></i> <span id="chars-count">0</span></span>
-                <span title="Characters (no spaces)"><i class="ph ph-hash-straight"></i> <span id="chars-no-space-count">0</span></span>
-                <span title="Paragraphs"><i class="ph ph-text-align-left"></i> <span id="paragraphs-count">0</span></span>
-                <span title="Estimated Reading Time"><i class="ph ph-clock"></i> <span id="reading-time">0 min</span></span>
+                <span class="status-pill" id="cursor-pos" title="Cursor Position"><i class="ph ph-cursor-text"></i> <span id="cursor-position-label">Ln 1, Col 1</span></span>
+                <span class="status-pill hide-on-mobile" id="selection-pos" title="Selection"><span id="selection-label">Sel: 0</span></span>
+                <span class="status-pill" title="Lines"><i class="ph ph-rows"></i> <span id="lines-count">1</span></span>
+                <span class="status-pill" title="Words"><i class="ph ph-text-t"></i> <span id="words-count">0</span></span>
+                <span class="status-pill hide-on-mobile" title="Characters"><i class="ph ph-hash"></i> <span id="chars-count">0</span></span>
+                <span class="status-pill hide-on-mobile" title="Reading Time"><i class="ph ph-clock"></i> <span id="reading-time">0 min</span></span>
             </div>
             <div class="stats-right">
-                <span id="editor-mode">Markdown</span>
-                <span class="encoding">UTF-8</span>
+                <a href="https://github.com/TizioQualunquee/editor-pro" target="_blank" rel="noopener noreferrer" class="status-pill clickable" title="View Source on GitHub" style="text-decoration:none; color:inherit;">
+                    <i class="ph ph-github-logo"></i> <span class="hide-on-mobile">GitHub</span>
+                </a>
+                <span class="status-pill clickable" id="status-theme-indicator" title="Active Theme"><i class="ph ph-palette"></i> <span id="status-theme-label">Slate Midnight</span></span>
+                <span class="status-pill hide-on-mobile encoding">UTF-8</span>
             </div>
         </footer>
     </div>
 
     <!-- Hidden File Input for Open -->
-    <input type="file" id="file-input" accept=".md,.txt" style="display: none;">
+    <input type="file" id="file-input" accept=".md,.txt,.markdown,.json,.html" style="display: none;">
 
     <script src="script.js"></script>
 </body>
