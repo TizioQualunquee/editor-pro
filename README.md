@@ -7,7 +7,7 @@
 
 <p align="center">
   Write, organize, preview, and export your notes directly in your browser.
-  No account. No backend. No unnecessary complexity.
+  No account. No backend. Just a fast, private, local-first editor.
 </p>
 
 <p align="center">
