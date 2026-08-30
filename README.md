@@ -1,8 +1,9 @@
 # 📝 Editor Pro
 
 <p align="center">
-  <strong>A local-first Markdown editor built for fast, private, distraction-free writing.</strong>
+  <strong>A modern, fast, and feature-rich notepad & Markdown editor with multi-note management and a local-first experience.</strong>
 </p>
+
 
 <p align="center">
   Write, organize, preview, and export your notes directly in your browser.
