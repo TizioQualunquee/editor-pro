@@ -1,7 +1,7 @@
 # 📝 Editor Pro
 
 <p align="center">
-  <strong>A modern, fast, and feature-rich notepad & Markdown editor with multi-note management and a local-first experience.</strong>
+  <strong>A fast, modern notepad and Markdown editor with multi-note management and a local-first experience.</strong>
 </p>
 
 <p align="center">
